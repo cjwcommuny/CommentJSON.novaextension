@@ -1,8 +1,10 @@
 {
     "identifier": "cjwcommuny.CommentJSON",
-    "name": "CommentJSON",
+    "name": "JSON with Comments",
     "organization": "cjwcommuny",
     "description": "JSON with Comments",
     "version": "1.0",
-    "categories": ["languages"]
+    "categories": ["languages"],
+    "repository": "https://github.com/cjwcommuny/CommentJSON.novaextension",
+    "bugs": "https://github.com/cjwcommuny/CommentJSON.novaextension/issues"
 }

@@ -12,7 +12,7 @@ Let's get started!
 🎈 Include a brief description of the features your syntax extension provides. For example:
 -->
 
-**CommentJSON** provides syntax highlighting for JSON with comments.
+This extension provides syntax highlighting for **JSON with comments**.
 
 <!--
 🎈 It can also be helpful to include a screenshot or GIF showing your extension in action:
