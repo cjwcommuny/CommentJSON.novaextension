@@ -1,41 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<syntax name="mylang">
+<syntax name="commentjson">
     <meta>
-        <name>CommentJSON</name>
+        <name>JSON with Comments</name>
         <type>structured</type>
-        <preferred-file-extension>mylang</preferred-file-extension>
+        <preferred-file-extension>json</preferred-file-extension>
     </meta>
     
     <detectors>
-        <extension priority="1.0">mylang</extension>
+        <extension priority="1.0">json</extension>
     </detectors>
     
     <indentation>
         <increase>
-            <expression>^\s*&lt;(([^!/?]|%)(?!.+?([/%]&gt;|&lt;/.+?&gt;))|[%!]--\s*$)</expression>
+            <expression>(\{[^}\"']*$)|(\[[^\]\"']*$)|(\([^)\"']*$)</expression>
         </increase>
         <decrease>
-            <expression>^\s*(&lt;/[^&gt;]+&gt;|--&gt;|--%&gt;)</expression>
+            <expression>^\s*(\s*/\*.*\*/\s*)*[\}\]\)\\]</expression>
         </decrease>
     </indentation>
     
     <comments>
+        <single>
+            <expression>//</expression>
+        </single>
         <multiline>
             <starts-with>
-                <expression>&lt;!--</expression>
+                <expression>/*</expression>
             </starts-with>
             <ends-with>
-                <expression>--&gt;</expression>
+                <expression>*/</expression>
             </ends-with>
         </multiline>
     </comments>
     
     <brackets>
-        <pair open="&lt;" close="&gt;" />
+        <pair open="{" close="}" />
+        <pair open="[" close="]" />
+        <pair open="(" close=")" />
     </brackets>
     
     <surrounding-pairs>
-        <pair open="&lt;" close="&gt;" />
         <pair open="{" close="}" />
         <pair open="[" close="]" />
         <pair open="(" close=")" />
@@ -45,105 +49,172 @@
     </surrounding-pairs>
     
     <scopes>
-        <!-- Meta -->
-        <scope name="mylang.meta.processing">
-            <starts-with>
-                <expression>&lt;\?mylang</expression>
-            </starts-with>
-            <ends-with>
-                <expression>\?&gt;</expression>
-            </ends-with>
-        </scope>
-        <scope name="mylang.meta.declaration">
-            <starts-with>
-                <expression>&lt;!(?i:DOCTYPE)</expression>
-            </starts-with>
-            <ends-with>
-                <expression>&gt;</expression>
-            </ends-with>
-        </scope>
-        <scope name="mylang.meta.cdata">
-            <starts-with>
-                <expression>&lt;!\[(?i:CDATA)\[</expression>
-            </starts-with>
-            <ends-with>
-                <expression>\]\]&gt;</expression>
-            </ends-with>
-            <subscopes />
-        </scope>
-        
-        <!-- Comments -->
-        <scope name="mylang.comment.block" spell-check="true">
-            <starts-with>
-                <expression>&lt;!--</expression>
-            </starts-with>
-            <ends-with>
-                <expression>--&gt;</expression>
-            </ends-with>
-        </scope>
-        
-        <!-- Tags -->
-        <include syntax="self" collection="tags" />
-        
-        <!-- Values -->
-        <scope name="html.value.entity.numeric">
-            <expression>&amp;\#[0-9]+;</expression>
-        </scope>
-        <scope name="mylang.value.entity.named">
-            <strings prefix="&amp;" suffix=";" word-boundary="false">
-                <string>amp</string>
-                <string>lt</string>
-                <string>gt</string>
-                <string>apos</string>
-                <string>quot</string>
-            </strings>
-        </scope>
+        <include syntax="self" collection="values" />
+        <include syntax="self" collection="syntax" />
+        <include syntax="self" collection="comments" />
     </scopes>
     
     <collections>
-        <!-- Tags -->
-        <collection name="tags">
-            <scope name="mylang.tag.close">
-                <symbol type="tag">
-                    <context behavior="end" group-by-name="true" />
-                </symbol>
-                <expression>&lt;/([a-zA-Z_][a-zA-Z0-9_-]*)&gt;</expression>
-                <capture number="1" name="mylang.tag.name" />
+        <!-- comments -->
+        <collection name="comments">
+            <scope name="rust.comment.single">
+                <expression>//(?:/|!)?(.*)$</expression>
+                <capture number="1" name="rust.comment.content" />
             </scope>
-            <scope name="mylang.tag.open">
-                <symbol type="tag">
-                    <!-- Do not match self-closing tags for symbolication -->
-                    <filter match-end="(?&lt;!/&gt;)" />
-                    <context behavior="start" group-by-name="true" />
-                    <auto-close string="&lt;/" completion="${name}&gt;" />
-                </symbol>
+            <scope name="rust.comment.block">
                 <starts-with>
-                    <expression>&lt;([a-zA-Z_][a-zA-Z0-9_-]*)</expression>
-                    <capture number="1" name="mylang.tag.name" />
+                    <expression>/\*</expression>
                 </starts-with>
                 <ends-with>
-                    <expression>/?&gt;</expression>
+                    <expression>\*/</expression>
+                </ends-with>
+            </scope>
+        </collection>
+        
+        <!-- Values -->
+        <collection name="values">
+            <include syntax="self" collection="strings" />
+            <include syntax="self" collection="objects" />
+            <scope name="commentjson.value.null">
+                <strings>
+                    <string>null</string>
+                    <string>undefined</string>
+                    <string>NaN</string>
+                    <string>Infinity</string>
+                </strings>
+            </scope>
+            <scope name="commentjson.value.boolean">
+                <strings>
+                    <string>true</string>
+                    <string>false</string>
+                </strings>
+            </scope>
+            <scope name="commentjson.value.number">
+                <expression>\b\-?(?:\d+(?:\.\d*)?|(?:\.\d+))\b</expression>
+            </scope>
+        </collection>
+        
+        <!-- Strings -->
+        <collection name="strings">
+            <scope name="commentjson.string.double-quoted">
+                <starts-with>
+                    <expression>&quot;</expression>
+                    <capture number="0" name="commentjson.string.double-quoted.delimiter" />
+                </starts-with>
+                <ends-with>
+                    <expression>&quot;|(?:(?&lt;!\\)$)</expression>
+                    <capture number="0" name="commentjson.string.double-quoted.delimiter" />
                 </ends-with>
                 <subscopes>
-                    <include syntax="self" collection="mylang.tag.attributes" />
+                    <scope name="commentjson.string.double-quoted.escape">
+                        <expression>\\(?:\\|&apos;|&quot;|n|r|t|b|f)</expression>
+                    </scope>
+                </subscopes>
+            </scope>
+            <scope name="commentjson.string.single-quoted">
+                <starts-with>
+                    <expression>&apos;</expression>
+                    <capture number="0" name="commentjson.string.single-quoted.delimiter" />
+                </starts-with>
+                <ends-with>
+                    <expression>&apos;|(?:(?&lt;!\\)$)</expression>
+                    <capture number="0" name="commentjson.string.single-quoted.delimiter" />
+                </ends-with>
+                <subscopes>
+                    <scope name="commentjson.string.single-quoted.escape">
+                        <expression>\\(?:\\|&apos;|&quot;|n|r|t|b|f)</expression>
+                    </scope>
                 </subscopes>
             </scope>
         </collection>
         
-        <!-- Tag Attributes -->
-        <collection name="mylang.tag.attributes">
-            <scope name="mylang.tag.attribute">
-                <expression>(?:([a-zA-Z_][a-zA-Z0-9-_]*)(\:))?([a-zA-Z_][a-zA-Z0-9-_]*)\s*(=?)\s*(?:(?:(&apos;)(\\&apos;|[^&apos;]*)(&apos;)?)|(?:(&quot;)(\\&quot;|[^&quot;]*)(&quot;)?))?</expression>
-                <capture number="1" name="mylang.tag.attribute.name.namespace" />
-                <capture number="2" name="mylang.tag.attribute.name.separator" />
-                <capture number="3" name="mylang.tag.attribute.name.local" />
-                <capture number="4" name="mylang.tag.attribute.equals-sign" />
-                <capture number="5" name="mylang.tag.attribute.quote.left" />
-                <capture number="6" name="mylang.tag.attribute.value" />
-                <capture number="7" name="mylang.tag.attribute.quote.right" />
-                <capture number="8" name="mylang.tag.attribute.quote.left" />
-                <capture number="9" name="mylang.tag.attribute.value" />
-                <capture number="10" name="mylang.tag.attribute.quote.right" />
+        <!-- Keys -->
+        <collection name="keys">
+            <scope name="commentjson.string.key.double-quoted">
+                <symbol type="property">
+                    <context behavior="subtree" />
+                </symbol>
+                <starts-with>
+                    <expression>(&quot;)((?:(?:\\(?:\\|&apos;|&quot;|n|r|t|b|f))|(?:[^&quot;]))*)(&quot;)\s*(:)</expression>
+                    <capture number="1" name="commentjson.string.key.double-quoted.delimiter" />
+                    <capture number="2" name="commentjson.key.double-quoted.name" />
+                    <capture number="3" name="commentjson.string.key.double-quoted.delimiter" />
+                    <capture number="4" name="commentjson.operator.colon" />
+                </starts-with>
+                <ends-with>
+                    <expression>(?=\,|\})</expression>
+                </ends-with>
+                <subscopes anchored="true">
+                    <include syntax="self" collection="values" />
+                </subscopes>
+            </scope>
+            <scope name="commentjson.string.key.single-quoted">
+                <symbol type="property">
+                    <context behavior="subtree" />
+                </symbol>
+                <starts-with>
+                    <expression>(&apos;)((?:(?:\\(?:\\|&apos;|&quot;|n|r|t|b|f))|(?:[^&apos;]))*)(&apos;)\s*(:)</expression>
+                    <capture number="1" name="commentjson.string.key.single-quoted.delimiter" />
+                    <capture number="2" name="commentjson.key.double-quoted.name" />
+                    <capture number="3" name="commentjson.string.key.single-quoted.delimiter" />
+                    <capture number="4" name="commentjson.operator.colon" />
+                </starts-with>
+                <ends-with>
+                    <expression>(?=\,|\})</expression>
+                </ends-with>
+                <subscopes anchored="true">
+                    <include syntax="self" collection="values" />
+                </subscopes>
+            </scope>
+        </collection>
+        
+        <!-- Objects -->
+        <collection name="objects">
+            <scope name="commentjson.object">
+                <symbol type="block">
+                    <context behavior="subtree" />
+                </symbol>
+                <starts-with>
+                    <expression>\{</expression>
+                    <capture number="0" name="commentjson.object.bracket" />
+                </starts-with>
+                <ends-with>
+                    <expression>\}</expression>
+                    <capture number="0" name="commentjson.object.bracket" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="keys" />
+                    <include syntax="self" />
+                </subscopes>
+            </scope>
+            <scope name="commentjson.array">
+                <symbol type="block">
+                    <context behavior="subtree" />
+                </symbol>
+                <starts-with>
+                    <expression>\[</expression>
+                    <capture number="0" name="commentjson.array.bracket" />
+                </starts-with>
+                <ends-with>
+                    <expression>\]</expression>
+                    <capture number="0" name="commentjson.array.bracket" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" />
+                </subscopes>
+            </scope>
+        </collection>
+        
+        <!-- Syntax -->
+        <collection name="syntax">
+            <scope name="commentjson.bracket">
+                <expression>[\{\(\[\}\)\]]</expression>
+            </scope>
+            <scope name="commentjson.comma">
+                <expression>,</expression>
+            </scope>
+            <scope name="commentjson.semicolon">
+                <expression>;</expression>
             </scope>
         </collection>
     </collections>

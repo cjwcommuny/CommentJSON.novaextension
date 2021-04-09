@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig.json to read more about this file */
+
+    /* Basic Options */
+    "target": "es5",                                /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', or 'ESNEXT'. */
+    "module": "commonjs",                           /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */
+    "outDir": "./Scripts",                              /* Redirect output structure to the directory. */
+    "rootDir": "./ts",                             /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "removeComments": false,                      /* Do not emit comments to output. */
+    "noEmit": false,                              /* Do not emit outputs. */                 
+
+    /* Strict Type-Checking Options */
+    "strict": true,                                 /* Enable all strict type-checking options. */
+    "alwaysStrict": true,                        /* Parse in strict mode and emit "use strict" for each source file. */
+
+    /* Additional Checks */
+    "noImplicitReturns": true,                   /* Report error when not all code paths in function return a value. */
+
+    /* Advanced Options */
+    "skipLibCheck": true,                           /* Skip type checking of declaration files. */
+    "forceConsistentCasingInFileNames": true,        /* Disallow inconsistently-cased references to the same file. */
+    "lib": ["dom"]
+  },
+  "include": ["ts/**/*"],
+  "exclude": ["**/node_modules", "**/build", "**/dist", "**/*.md", "**/rollup.config.js"]
+}
+// comments
+
+

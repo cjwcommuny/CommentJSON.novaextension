@@ -2,7 +2,7 @@
     "identifier": "cjwcommuny.CommentJSON",
     "name": "CommentJSON",
     "organization": "cjwcommuny",
-    "description": "Lorem ipsum, dolor sit amet.",
+    "description": "JSON with Comments",
     "version": "1.0",
     "categories": ["languages"]
 }
