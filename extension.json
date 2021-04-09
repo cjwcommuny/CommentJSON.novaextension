@@ -3,7 +3,7 @@
     "name": "JSON with Comments",
     "organization": "cjwcommuny",
     "description": "JSON with Comments",
-    "version": "1.0",
+    "version": "1.0.1",
     "categories": ["languages"],
     "repository": "https://github.com/cjwcommuny/CommentJSON.novaextension",
     "bugs": "https://github.com/cjwcommuny/CommentJSON.novaextension/issues"
