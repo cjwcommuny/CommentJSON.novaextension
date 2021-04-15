@@ -18,4 +18,4 @@ This extension provides syntax highlighting for **JSON with comments**.
 🎈 It can also be helpful to include a screenshot or GIF showing your extension in action:
 -->
 
-![](./Images/extension/CommentJSON.png)
+![](https://github.com/cjwcommuny/CommentJSON.novaextension/raw/master/Images/extension/CommentJSON.png)
