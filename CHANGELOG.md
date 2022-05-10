@@ -1,6 +1,10 @@
+## Version 1.0.3
+
+Support symbols for multiline comments.
+
 ## Version 1.0.2
 
-Add a screenshot to README
+Add a screenshot to README.
 
 ## Version 1.0.1
 

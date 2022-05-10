@@ -7,11 +7,13 @@
     </meta>
     
     <detectors>
-        <combo priority="1.0">
-            <extension>json</extension>
-            <match-content>//(?:/|!)?(.*)$</match-content>
-            <match-content>/\*</match-content>
-            <match-content>\*/</match-content>
+<!--         <extension priority="1.0">json</extension>
+        <match-content priority="1.0">(?<!\\)//</match-content> -->
+        <combo>
+            <extension priority="1.0">json</extension>
+<!--             <match-content priority="0.3">//(?:/|!)?(.*)$</match-content> -->
+            <match-content priority="1.0">/\*</match-content>
+            <match-content priority="1.0">\*/</match-content>
         </combo>
     </detectors>
     
@@ -67,6 +69,9 @@
                 <capture number="1" name="rust.comment.content" />
             </scope>
             <scope name="rust.comment.block">
+                <symbol type="block">
+                    <context behavior="subtree" />
+                </symbol>
                 <starts-with>
                     <expression>/\*</expression>
                 </starts-with>
